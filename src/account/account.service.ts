@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
@@ -9,26 +9,44 @@ export class AccountService {
   constructor(private dataSource: DataSource) {}
 
   async create(createAccountDto: CreateAccountDto) {
-    const accountRepo = this.dataSource.getRepository(Account)
-    const newAccount = new Account()
-    newAccount.accountNumber = createAccountDto.accountNumber
-    newAccount.balance = createAccountDto.balance
-    await accountRepo.save(newAccount)
+    const accountRepo = this.dataSource.getRepository(Account);
+    const newAccount = new Account();
+    newAccount.accountNumber = createAccountDto.accountNumber;
+    newAccount.balance = createAccountDto.balance;
+    await accountRepo.save(newAccount);
   }
 
-  findAll() {
-    return `This action returns all account`;
+  async findAll() {
+    return await this.dataSource.getRepository(Account).find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} account`;
+  async findOne(id: number) {
+    return await this.dataSource.getRepository(Account).findBy({ id: id });
   }
 
-  update(id: number, updateAccountDto: UpdateAccountDto) {
-    return `This action updates a #${id} account`;
+  async update(id: number, updateAccountDto: UpdateAccountDto) {
+    const accountRepo = this.dataSource.getRepository(Account);
+
+    const accountUpdate = await accountRepo.findOneBy({ id });
+    if (
+      updateAccountDto.accountNumber == null &&
+      updateAccountDto.balance == null
+    ) {
+      throw new BadRequestException(
+        'Nincs kitöltve az adat, nem lehet módosítani.',
+      );
+    }
+
+    updateAccountDto.accountNumber = updateAccountDto.accountNumber;
+    updateAccountDto.balance = updateAccountDto.balance;
+    accountRepo.save(accountUpdate);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} account`;
+  async remove(id: number) {
+    const accountRepo = this.dataSource.getRepository(Account);
+    if (!(await accountRepo.findOneBy({ id: id }))) {
+      throw new BadRequestException('Ilyen számla nem létezik');
+    }
+    accountRepo.delete(id);
   }
 }
