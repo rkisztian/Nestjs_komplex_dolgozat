@@ -32,9 +32,7 @@ export class AccountService {
       updateAccountDto.accountNumber == null &&
       updateAccountDto.balance == null
     ) {
-      throw new BadRequestException(
-        'Nincs kitöltve az adat, nem lehet módosítani.',
-      );
+      throw new BadRequestException('Nem lehetnek üresek az adattagok');
     }
 
     updateAccountDto.accountNumber = updateAccountDto.accountNumber;
