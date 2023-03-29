@@ -18,6 +18,6 @@ export class Account {
   @Column()
   balance: number;
 
-  @ManyToOne(() => (owner) => owner.account, { onDelete: 'SET NULL' })
-  owner: Owner[];
+  @ManyToOne(() => Owner, (owner) => owner.account, { onDelete: 'SET NULL' })
+  owner: Owner;
 }

@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { Owner } from 'src/owner/entities/owner.entity';
 import { DataSource } from 'typeorm';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
@@ -14,6 +15,18 @@ export class AccountService {
     newAccount.accountNumber = createAccountDto.accountNumber;
     newAccount.balance = createAccountDto.balance;
     await accountRepo.save(newAccount);
+  }
+
+  async accountAddToOwner(accountid: number, ownerid: number) {
+    const accountRepo = this.dataSource.getRepository(Account);
+    const ownerRepo = this.dataSource.getRepository(Owner);
+    const szamla = await accountRepo.findOne({
+      where: { id: accountid },
+      relations: { owner: true },
+    });
+    const tulajdonos = await ownerRepo.findOneBy({ id: ownerid });
+    szamla.owner = tulajdonos;
+    return accountRepo.save(szamla);
   }
 
   async findAll() {
