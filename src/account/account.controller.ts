@@ -20,6 +20,14 @@ export class AccountController {
     return this.accountService.create(createAccountDto);
   }
 
+  @Post(':accountid/giveto/:ownerid')
+  accountAddToOwner(
+    @Param('accountid') accountid: number,
+    @Param('ownerid') ownerid: number,
+  ) {
+    return this.accountService.accountAddToOwner(accountid, ownerid);
+  }
+
   @Get('allAccount')
   findAll() {
     return this.accountService.findAll();
