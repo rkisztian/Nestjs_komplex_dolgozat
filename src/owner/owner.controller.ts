@@ -15,7 +15,7 @@ import { UpdateOwnerDto } from './dto/update-owner.dto';
 export class OwnerController {
   constructor(private readonly ownerService: OwnerService) {}
 
-  @Post()
+  @Post('createowner')
   create(@Body() createOwnerDto: CreateOwnerDto) {
     return this.ownerService.create(createOwnerDto);
   }
